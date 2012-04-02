@@ -38,12 +38,18 @@ class OriginalField (forms.ImageField):
     
 class CropOverride (models.ImageField):
   def __init__ (self, *args, **kwargs):
-    self.original = kwargs['original']
-    del kwargs['original']
-    
-    self.aspect = kwargs['aspect']
-    del kwargs['aspect']
-    
+    if kwargs.has_key('original') and kwargs.has_key('aspect'):
+      self.original = kwargs['original']
+      del kwargs['original']
+      
+      self.aspect = kwargs['aspect']
+      del kwargs['aspect']
+      
+    else:
+      #set defaults so south works but original and aspect are really needed when using for real.
+      self.original = 'none'
+      self.aspect = '1x1'
+      
     if not kwargs.has_key('blank'):
       kwargs['blank'] = True
       
@@ -78,3 +84,13 @@ class OriginalImage (models.ImageField):
     defaults = {'form_class': OriginalField}
     defaults.update(kwargs)
     return super(OriginalImage, self).formfield(**defaults)
+    
+try:
+  from south.modelsinspector import add_introspection_rules
+  
+except ImportError:
+  pass
+
+else:
+  add_introspection_rules([], ["^crop_override\.field\.CropOverride", "^crop_override\.field\.OriginalImage"])
+  
