@@ -18,13 +18,13 @@ function show_cropper (name, orig, aspect) {
   }
   
   var img = jQuery('#id_orig_' + orig).val();
-  var html = '<div class="cropper_modal" id="cropper_' + ts + '" style="width: 940px;">\
-<div style="width:' + pw + 'px;height:' + ph + 'px;overflow:hidden; margin-top: 25px; float: right;"><img src="' + img + '" class="crop_preview" alt="Preview" style=""></div>\
-<img src="' + img + '" alt="" class="orig" style="max-width: 840px; max-height: 520px; display: block;"/>\
+  var html = '<div class="cropper_modal" id="cropper_' + ts + '" style="float: left; padding: 10px 0 0 10px;">\
+<img src="' + img + '" alt="" class="orig" style="max-width: 810px; max-height: 520px; display: block;"/>\
 <br/>\
 <input type="button" name="cancel" value="Cancel" onclick="cancel_cropper()"/> \
 <input type="button" name="done" value="Set Crop" onclick="set_crop(\'' + name + '\')"/>\
-</div>';
+</div>\
+<div style="width:' + pw + 'px;height:' + ph + 'px;overflow:hidden; margin: 25px 0 0 5px; float: left;"><img src="' + img + '" class="crop_preview" alt="Preview" style=""></div>';
   
   jQuery(html).modal({containerCss: {width: 960, height: 600}});
   
