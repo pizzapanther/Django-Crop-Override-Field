@@ -4,9 +4,9 @@ helping with defining crops.
 ### Use Case: ###
 You want users to upload an image and on the frontend of your site you display
 the image as a square and landscape aspect ratio thumbnails.  You would like 
-these thumbnails to be generated automatically from the original, but sometimes
-your auto-cropper doesn't get it right and you would like to provide a manual
-override.
+these thumbnails to be generated automatically from the original. However,
+sometimes your auto-cropper doesn't get it right and you would like to provide 
+a manual override.
 
 ### What Django Override Crop Field does: ###
 *  Gives you an optional image field to store your crop in.
@@ -15,17 +15,17 @@ When not used it falls back to providing the original image to be resized.
 *  An admin widget to make quick crops right in the admin interface.
 
 
-### Usage ###
+### Usage: ###
 #### models.py ####
 ```python
 from django.db import models
 
-from crop_override import CropOverride
+from crop_override import CropOverride, OriginalImage
 
 class Image (models.Model):
   alt_tag = models.CharField('Alt Tag', max_length=75)
   
-  full_size = models.ImageField('Full Size Original', upload_to='some/dir')
+  full_size = OriginalImage('Full Size Original', upload_to='some/dir')
   
   square_crop = CropOverride('Square Crop, 1x1 Ratio', upload_to='some/dir', original='full_size', aspect='1x1')
   landscape_crop = CropOverride('Landscape Crop, 4x3 Ratio', upload_to='some/dir', original='full_size', aspect='4x3')
@@ -33,16 +33,29 @@ class Image (models.Model):
   
 ```
 
+#### admin.py ####
+```python
+from crop_override.admin import CropAdmin
+
+class ImageAdmin (CropAdmin):
+  ...
+  
+```
+
 #### views.py ####
 ```python
+
+from crop_override import get_override
+#get_override returns crop field or original
 
 def some_view (request):
   ...
   
   im = Image.objects.get(id=some_id)
-  process_square(im.square_crop)
-  process_landscape(im.landscape_crop)
-  process_portrait(im.portrait_crop)
+  
+  image_for_square_use = get_override(im, 'square_crop'))
+  image_for_landscape_use = get_override(im, 'landscape_crop'))
+  image_for_portrait_use = get_override(im, 'portrait_crop'))
   
   ...
   
@@ -50,22 +63,24 @@ def some_view (request):
 
 #### some_template.html Using Sorl Thumbnail ####
 ```html
-{% load thumbnail %}
-{% thumbnail some_image.square_crop "400x400" crop="center" as square %}
+{% load crop_util thumbnail %}
+<!--get_override returns crop field or original-->
+
+{% thumbnail model_instance|get_override:'square_crop' "400x400" crop="center" as square %}
 <p>
-  Square Image: <img alt="{{ some_image.alt }}" src="{{ square.url }}">
+  Square Image: <img alt="{{ model_instance.alt }}" src="{{ square.url }}">
 </p>
 {% endthumbnail %}
 
-{% thumbnail some_image.landscape_crop "400x300" crop="center" as landscape %}
+{% thumbnail model_instance|get_override:'landscape_crop' "400x300" crop="center" as landscape %}
 <p>
-  Landscape Image: <img alt="{{ some_image.alt }}" src="{{ landscape.url }}">
+  Landscape Image: <img alt="{{ model_instance.alt }}" src="{{ landscape.url }}">
 </p>
 {% endthumbnail %}
 
-{% thumbnail some_image.portrait_crop "300x400" crop="center" as portrait %}
+{% thumbnail model_instance|get_override:'portrait_crop' "300x400" crop="center" as portrait %}
 <p>
-  Portrait Image: <img alt="{{ some_image.alt }}" src="{{ portrait.url }}">
+  Portrait Image: <img alt="{{ model_instance.alt }}" src="{{ portrait.url }}">
 </p>
 {% endthumbnail %}
 
