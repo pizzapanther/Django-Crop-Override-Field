@@ -1,3 +1,3 @@
 
-from .field import CropOverride, OriginalImage
+from .field import CropOverride, OriginalImage, CropOverrideField, OriginalField
 from .widget import CropOverrideInput
