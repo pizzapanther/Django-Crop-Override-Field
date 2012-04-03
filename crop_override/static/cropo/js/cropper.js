@@ -18,6 +18,12 @@ function show_cropper (name, orig, aspect) {
   }
   
   var img = jQuery('#id_orig_' + orig).val();
+  var value = jQuery('#id_'+orig).val();
+  if (!img || !!value) {
+    // cancel if the value has been changed (field not blank) or no img
+    jQuery('#crop_' + name).html('Image has changed or is empty. Please save and try again.');
+    return;
+  }
   var html = '<div class="cropper_modal" id="cropper_' + ts + '" style="float: left; padding: 10px 0 0 10px;">\
 <img src="' + img + '" alt="" class="orig" style="max-width: 810px; max-height: 520px; display: block;"/>\
 <br/>\
