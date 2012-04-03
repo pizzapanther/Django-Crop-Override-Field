@@ -13,11 +13,17 @@ def save_crops (obj, request):
       crop_data = request.REQUEST.get('crop_' + f.name, '')
       if crop_data:
         crop_data = crop_data.split(',')
+        if crop_data[4] == 0 or crop_data[5] == 0:
+          continue
+        
+        if int(crop_data[2]) - int(crop_data[0]) == 0 or int(crop_data[3]) - int(crop_data[1]) == 0:
+          continue
+        
         orig = getattr(obj, f.original)
         xf = float(orig.width) / float(crop_data[4])
         yf = float(orig.height) / float(crop_data[5])
         
-        box = (int(xf * float(crop_data[0])), int(yf * float(crop_data[1])), int(xf * float(crop_data[2])), int(yf * float(crop_data[3])))
+        box = (int(xf * int(crop_data[0])), int(yf * int(crop_data[1])), int(xf * int(crop_data[2])), int(yf * int(crop_data[3])))
         
         c = Image.open(orig.path)
         c = c.crop(box)
