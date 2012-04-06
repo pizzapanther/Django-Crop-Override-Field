@@ -3,7 +3,11 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 
 LOAD_JQUERY = getattr(settings, 'CROPOVERRIDE_LOAD_JQUERY', True)
+SHOW_THUMB = getattr(settings, 'CROPOVERRIDE_SHOW_THUMB', False)
 
+if SHOW_THUMB:
+  from sorl.thumbnail import get_thumbnail
+  
 class CropOverrideInput (forms.ClearableFileInput):
   def __init__ (self, original, aspect, attrs=None):
     self.original = original
@@ -14,6 +18,12 @@ class CropOverrideInput (forms.ClearableFileInput):
     tmp = self.aspect.split('x')
     aspect = float(tmp[0]) / float(tmp[1])
     
+    thumb = ''
+    if SHOW_THUMB and value:
+      im = get_thumbnail(value, '128x128')
+      if hasattr(im, 'url'):
+        thumb = '<img alt="" src="%s"><br>' % im.url
+        
     html = super(CropOverrideInput, self).render(name, value, attrs)
     jcrop = """
 <div id="crop_%(name)s">
@@ -23,7 +33,7 @@ class CropOverrideInput (forms.ClearableFileInput):
 </div>
     """ % {'name': name, 'orig': self.original, 'aspect': aspect}
     
-    return mark_safe(html + jcrop)
+    return mark_safe(thumb + html + jcrop)
     
   class Media:
     css = {'all': ('cropo/js/jcrop/css/jquery.Jcrop.css', 'cropo/js/simplemodal/css/basic.css')}
@@ -49,12 +59,18 @@ class AdminCropOverrideInput (CropOverrideInput):
   
 class OriginalInput (forms.ClearableFileInput):
   def render (self, name, value, attrs=None):
+    thumb = ''
+    if SHOW_THUMB and value:
+      im = get_thumbnail(value, '128x128')
+      if hasattr(im, 'url'):
+        thumb = '<img alt="" src="%s"><br>' % im.url
+        
     html = super(OriginalInput, self).render(name, value, attrs)
     jcrop = '<input type="hidden" name="orig_%s" id="id_orig_%s" value=""/>' % (name, name)
     if value and hasattr(value, "url"):
       jcrop = '<input type="hidden" name="orig_%s" id="id_orig_%s" value="%s"/>' % (name, name, value.url)
       
-    return mark_safe(html + jcrop)
+    return mark_safe(thumb + html + jcrop)
     
 class AdminOriginalInput (OriginalInput):
   template_with_initial = (u'<p class="file-upload">%s</p>' % OriginalInput.template_with_initial)
