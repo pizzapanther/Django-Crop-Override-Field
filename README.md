@@ -16,6 +16,9 @@ When not used it falls back to providing the original image to be resized.
 
 
 ### Usage: ###
+
+Add 'crop_override' to INSTALLED_APPS in settings.py
+
 #### models.py ####
 ```python
 from django.db import models

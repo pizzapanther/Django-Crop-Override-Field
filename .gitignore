@@ -1,2 +1,4 @@
 *.pyc
-
+build
+dist
+crop_override.egg-info
