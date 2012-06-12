@@ -1,7 +1,9 @@
 import os
+from cStringIO import StringIO
 
 from django.contrib import admin
 from django.conf import settings
+from django.core.files.base import ContentFile
 
 import Image
 
@@ -20,24 +22,33 @@ def save_crops (obj, request):
           continue
         
         orig = getattr(obj, f.original)
-        xf = float(orig.width) / float(crop_data[4])
-        yf = float(orig.height) / float(crop_data[5])
+        if hasattr(orig, 'width'):
+          width = orig.width
+          height = orig.height
+          c = Image.open(orig.path)
+          
+        else:
+          buf = StringIO(orig.read())
+          c = Image.open(buf)
+          width, height = c.size
+          
+        xf = float(width) / float(crop_data[4])
+        yf = float(height) / float(crop_data[5])
         
         box = (int(xf * int(crop_data[0])), int(yf * int(crop_data[1])), int(xf * int(crop_data[2])), int(yf * int(crop_data[3])))
         
-        c = Image.open(orig.path)
+        root, ext = os.path.splitext(orig.name)
+        cp = root + '_jcrop_' + f.aspect + '.png'
+        
         c = c.crop(box)
         c.load()
         
-        root, ext = os.path.splitext(orig.path)
-        cp = root + '_jcrop_' + f.aspect + '.png'
+        buf = StringIO()
+        c.save(buf, "PNG")
         
-        c.save(cp, "PNG")
-        rp = cp.replace(settings.MEDIA_ROOT, '')
-        if rp.startswith('/'):
-          rp = rp[1:]
-          
-        setattr(obj, f.name, unicode(rp))
+        thumb_field = getattr(obj, f.name)
+        thumb_field.storage.save(cp, ContentFile(buf.getvalue()))
+        setattr(obj, f.name, cp)
         
 class CropAdmin (admin.ModelAdmin):
   def save_model (self, request, obj, form, change):
