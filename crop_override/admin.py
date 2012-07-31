@@ -47,7 +47,7 @@ def save_crops (obj, request):
         c.save(buf, "PNG")
         
         thumb_field = getattr(obj, f.name)
-        thumb_field.storage.save(cp, ContentFile(buf.getvalue()))
+        cp = thumb_field.storage.save(cp, ContentFile(buf.getvalue()))
         setattr(obj, f.name, cp)
         
 class CropAdmin (admin.ModelAdmin):
