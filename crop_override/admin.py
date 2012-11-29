@@ -25,7 +25,7 @@ def save_crops (obj, request):
         if hasattr(orig, 'width'):
           width = orig.width
           height = orig.height
-          c = Image.open(orig.path)
+          c = Image.open(orig)
           
         else:
           buf = StringIO(orig.read())
