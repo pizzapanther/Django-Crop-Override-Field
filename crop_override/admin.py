@@ -1,4 +1,5 @@
 import os
+import time
 from cStringIO import StringIO
 
 from django.contrib import admin
@@ -32,7 +33,7 @@ def save_crops (obj, request):
         box = (int(xf * int(crop_data[0])), int(yf * int(crop_data[1])), int(xf * int(crop_data[2])), int(yf * int(crop_data[3])))
         
         root, ext = os.path.splitext(orig.name)
-        cp = root + '_jcrop_' + f.aspect + '.png'
+        cp = root + '_jcrop_' + f.aspect + time.strftime("_%a%d%b%Y%H%M%S", time.localtime()) + '.png'
         
         c = c.crop(box)
         c.load()
