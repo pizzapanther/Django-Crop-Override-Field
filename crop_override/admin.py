@@ -22,16 +22,10 @@ def save_crops (obj, request):
           continue
         
         orig = getattr(obj, f.original)
-        if hasattr(orig, 'width'):
-          width = orig.width
-          height = orig.height
-          c = Image.open(orig)
-          
-        else:
-          buf = StringIO(orig.read())
-          c = Image.open(buf)
-          width, height = c.size
-          
+        buf = StringIO(orig.read())
+        c = Image.open(buf)
+        width, height = c.size
+        
         xf = float(width) / float(crop_data[4])
         yf = float(height) / float(crop_data[5])
         
