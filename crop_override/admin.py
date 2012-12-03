@@ -23,6 +23,7 @@ def save_crops (obj, request):
           continue
         
         orig = getattr(obj, f.original)
+        orig.seek(0)
         buf = StringIO(orig.read())
         c = Image.open(buf)
         width, height = c.size
