@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.core.files.base import ContentFile
 
-import Image
+from PIL import Image
 
 from .field import CropOverride
 
