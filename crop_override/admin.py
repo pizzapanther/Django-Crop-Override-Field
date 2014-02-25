@@ -32,6 +32,8 @@ def save_crops (obj, request):
           c = Image.open(buf)
           width, height = c.size
           
+        if c.mode == "CMYK":
+          c = c.convert("RGB")
         xf = float(width) / float(crop_data[4])
         yf = float(height) / float(crop_data[5])
         
