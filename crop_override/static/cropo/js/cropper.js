@@ -51,8 +51,6 @@ function updatePreview (c) {
     var boundx = bounds[0];
     var boundy = bounds[1];
     
-    console.log(Math.round(rx * c.x));
-    
     $('.crop_preview').css({
       width: Math.round(rx * boundx) + 'px',
       height: Math.round(ry * boundy) + 'px',
