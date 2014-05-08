@@ -1,5 +1,6 @@
 /* Fixes issue here http://code.google.com/p/jcrop/issues/detail?id=1 */
 .jcrop-holder { text-align: left; }
+.jcrop-holder img { max-width: none; }
 
 .jcrop-vline, .jcrop-hline
 {
