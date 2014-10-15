@@ -55,7 +55,8 @@ function updatePreview (c) {
       width: Math.round(rx * boundx) + 'px',
       height: Math.round(ry * boundy) + 'px',
       marginLeft: '-' + Math.round(rx * c.x) + 'px',
-      marginTop: '-' + Math.round(ry * c.y) + 'px'
+      marginTop: '-' + Math.round(ry * c.y) + 'px',
+      maxWidth: 'none'
     });
   }
 }
