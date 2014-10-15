@@ -1,5 +1,4 @@
 import os
-import time
 from cStringIO import StringIO
 
 from django.contrib import admin
@@ -23,18 +22,26 @@ def save_crops (obj, request):
           continue
         
         orig = getattr(obj, f.original)
-        orig.seek(0)
-        buf = StringIO(orig.read())
-        c = Image.open(buf)
-        width, height = c.size
-        
+        if hasattr(orig, 'width'):
+          width = orig.width
+          height = orig.height
+          c = Image.open(orig.path)
+          
+        else:
+          buf = StringIO(orig.read())
+          c = Image.open(buf)
+          width, height = c.size
+          
+        if c.mode == "CMYK":
+          c = c.convert("RGB")
+          
         xf = float(width) / float(crop_data[4])
         yf = float(height) / float(crop_data[5])
         
         box = (int(xf * int(crop_data[0])), int(yf * int(crop_data[1])), int(xf * int(crop_data[2])), int(yf * int(crop_data[3])))
         
         root, ext = os.path.splitext(orig.name)
-        cp = root + '_jcrop_' + f.aspect + time.strftime("_%a%d%b%Y%H%M%S", time.localtime()) + '.png'
+        cp = root + '_jcrop_' + f.aspect + '.png'
         
         c = c.crop(box)
         c.load()
